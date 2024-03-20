@@ -18,7 +18,7 @@ Clone o repositório:
 
 bash
 Copy code
-git clone https://github.com/seu-usuario/seu-repositorio.git
+git clone https://github.com/greenstealth/GreenStalk-Email-Scraper.git
 cd seu-repositorio
 Instale as dependências:
 Utilize o comando abaixo para instalar as dependências necessárias.
