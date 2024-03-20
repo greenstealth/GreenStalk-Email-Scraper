@@ -13,23 +13,31 @@ class EmailScraper:
         headers = {'User-Agent': 'Mozilla/5.0'}
         urls = []
         for start in range(0, self.max_results, 10):
-            url = f"https://www.google.com/search?q={self.query}&start={start}"
-            response = requests.get(url, headers=headers)
+            search_url = f"https://www.google.com/search?q={self.query}&start={start}"
+            response = requests.get(search_url, headers=headers)
             soup = BeautifulSoup(response.text, 'html.parser')
+
             for link in soup.find_all('a', href=True):
                 href = link.get('href')
                 if href.startswith('/url?q='):
-                    actual_url = href.split('&')[0].replace('/url?q=', '')
-                    urls.append(actual_url)
+                    actual_url = href.split('&')[0].replace('/url?q=', '').split('&')[0]
+                    if actual_url.startswith('http'):
+                        urls.append(actual_url)
+
             time.sleep(1)  # Be respectful to Google's servers
+
         return urls
 
     def scrape_emails_from_url(self, url):
         try:
             headers = {'User-Agent': 'Mozilla/5.0'}
             response = requests.get(url, headers=headers)
-            emails = set(self.email_regex.findall(response.text))
-            return emails
+            if response.status_code == 200:
+                emails = set(self.email_regex.findall(response.text))
+                return emails
+            else:
+                print(f"Erro ao acessar {url}: {response.status_code}")
+                return set()
         except requests.exceptions.RequestException as e:
             print(f"Erro ao acessar {url}: {e}")
             return set()
@@ -37,13 +45,12 @@ class EmailScraper:
     def run(self, output_file):
         with open(output_file, 'a') as email_file:
             urls = self.google_search()
-            for i, url in enumerate(urls, 1):
-                emails = self.scrape_emails_from_url(url)
-                for email in emails:
-                    email_file.write(f"{email}\n")
-                print(f"{i}. Processed {url} with {len(emails)} emails found.")
-
-# Uso da classe
-# query = 'site:br "contato@"'
-# scraper = EmailScraper(query)
-# scraper.run('emails.txt')
+            processed_urls = set()
+            
+            for url in urls:
+                if url not in processed_urls:
+                    emails = self.scrape_emails_from_url(url)
+                    for email in emails:
+                        email_file.write(f"{email}\n")
+                    processed_urls.add(url)
+                    print(f"Processed {url} with {len(emails)} emails found.")
