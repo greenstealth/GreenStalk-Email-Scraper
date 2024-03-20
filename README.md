@@ -15,16 +15,13 @@ Instalação e Uso
 Para usar este sistema, você precisará de Python instalado em seu ambiente. Este sistema foi testado no ambiente Kali Linux.
 
 Clone o repositório:
-
-bash
-Copy code
+bash Copy code
 git clone https://github.com/greenstealth/GreenStalk-Email-Scraper.git
-cd seu-repositorio
+cd GreenStalk-Email-Scraper
 Instale as dependências:
 Utilize o comando abaixo para instalar as dependências necessárias.
 
-bash
-Copy code
+bash Copy code
 pip install -r requirements.txt
 Uso
 Para usar o sistema, siga os passos abaixo:
